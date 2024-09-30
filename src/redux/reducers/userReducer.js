@@ -8,6 +8,7 @@ const initialState = {
 export const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case "FETCH_ROLES_REQUEST":
+      return { ...state, loading: true, error: null };
     case "SIGN_UP_REQUEST":
       return { ...state, loading: true, error: null };
     case "FETCH_ROLES_SUCCESS":
@@ -15,6 +16,7 @@ export const userReducer = (state = initialState, action) => {
     case "SIGN_UP_SUCCESS":
       return { ...state, user: action.payload, loading: false, error: null };
     case "FETCH_ROLES_FAILURE":
+      return { ...state, error: action.payload, loading: false };
     case "SIGN_UP_FAILURE":
       return { ...state, error: action.payload, loading: false };
     default:

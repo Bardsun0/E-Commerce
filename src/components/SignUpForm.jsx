@@ -21,7 +21,7 @@ const SignUpForm = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      role_id: "1", // Default to 'customer' role
+      role_id: "", // We leave the default value blank
     },
   });
 
@@ -31,7 +31,9 @@ const SignUpForm = () => {
 
   useEffect(() => {
     if (roles.length > 0) {
-      const customerRole = roles.find((role) => role.name === "customer");
+      const customerRole = roles.find(
+        (role) => role.name.toLowerCase() === "customer"
+      );
       if (customerRole) {
         setValue("role_id", customerRole.id.toString());
       }
@@ -55,10 +57,10 @@ const SignUpForm = () => {
       role_id: parseInt(data.role_id),
       ...(isStore && {
         store: {
-          name: data.store_name,
-          phone: data.store_phone,
-          tax_no: data.store_tax_id,
-          bank_account: data.store_bank_account,
+          name: data.store.name,
+          phone: data.store.phone,
+          tax_no: data.store.tax_no,
+          bank_account: data.store.bank_account,
         },
       }),
     };
@@ -158,7 +160,7 @@ const SignUpForm = () => {
         <select
           {...register("role_id", { required: true })}
           className="w-full p-2 border rounded"
-          onChange={(e) => setIsStore(e.target.value === "store")}
+          onChange={(e) => setIsStore(e.target.value === "2")} // Store role ID is assumed to be 2
         >
           <option value="">Select Role</option>
           {roles.map((role) => (
@@ -177,11 +179,11 @@ const SignUpForm = () => {
           <div className="mb-4">
             <input
               type="text"
-              {...register("store_name", { required: true, minLength: 3 })}
+              {...register("store.name", { required: true, minLength: 3 })}
               placeholder="Store Name"
               className="w-full p-2 border rounded"
             />
-            {errors.store_name && (
+            {errors.store?.name && (
               <span className="text-red-500">
                 Store name is required (min 3 characters)
               </span>
@@ -191,14 +193,14 @@ const SignUpForm = () => {
           <div className="mb-4">
             <input
               type="tel"
-              {...register("store_phone", {
+              {...register("store.phone", {
                 required: true,
                 pattern: /^(\+90|0)?[1-9][0-9]{9}$/,
               })}
               placeholder="Store Phone"
               className="w-full p-2 border rounded"
             />
-            {errors.store_phone && (
+            {errors.store?.phone && (
               <span className="text-red-500">
                 Valid Turkish phone number is required
               </span>
@@ -208,14 +210,14 @@ const SignUpForm = () => {
           <div className="mb-4">
             <input
               type="text"
-              {...register("store_tax_id", {
+              {...register("store.tax_no", {
                 required: true,
                 pattern: /^T\d{4}V\d{6}$/,
               })}
-              placeholder="Store Tax ID"
+              placeholder="Store TAX ID"
               className="w-full p-2 border rounded"
             />
-            {errors.store_tax_id && (
+            {errors.store?.tax_no && (
               <span className="text-red-500">
                 Valid Tax ID is required (Format: TXXXXVXXXXXX)
               </span>
@@ -225,14 +227,14 @@ const SignUpForm = () => {
           <div className="mb-4">
             <input
               type="text"
-              {...register("store_bank_account", {
+              {...register("store.bank_account", {
                 required: true,
                 pattern: /^TR\d{2}[0-9A-Z]{5}[A-Z0-9]{17}$/,
               })}
               placeholder="Store Bank Account (IBAN)"
               className="w-full p-2 border rounded"
             />
-            {errors.store_bank_account && (
+            {errors.store?.bank_account && (
               <span className="text-red-500">Valid IBAN is required</span>
             )}
           </div>
@@ -244,7 +246,14 @@ const SignUpForm = () => {
         className="w-full p-2 bg-blue-500 text-white rounded disabled:bg-blue-300"
         disabled={loading}
       >
-        {loading ? "Signing Up..." : "Sign Up"}
+        {loading ? (
+          <>
+            <i className="fas fa-spinner fa-spin mr-2"></i>
+            Signing Up...
+          </>
+        ) : (
+          "Sign Up"
+        )}
       </button>
     </form>
   );
